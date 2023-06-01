@@ -1,0 +1,108 @@
+        .card{
+            width: 350px;
+            height: 200px;
+            line-height: normal;
+        }
+        div.center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .card .front {
+           border: solid 1px black;
+           width: inherit;
+           height: inherit;
+        }
+
+        .card .back {
+           border: solid 1px black;
+           width: inherit;
+           height: inherit;
+        }
+
+        #newCardEl {
+           position: relative;
+        }
+
+        #plusSignEl {
+            position: relative;
+            top: 55px;
+            left: 150px;
+            font-size: 50pt;
+            text-decoration: none;
+            color: green;
+        }
+
+
+
+        /* use transform style to "transform" back for card to overlap front of card */
+        .card div.back {
+            transform: rotateY(90deg);
+            position: absolute;
+        }
+        .card div.front {
+            position: absolute;
+        }
+
+
+        
+        /* animate */
+.card div.front.animate{
+      animation: twirl 0.2s ease-in forwards;
+    }
+
+    .card div.back.animate{
+      animation: twirl 0.2s 0.2s ease-out forwards reverse;
+    }
+
+    .card div.back.animateReverse{
+      animation: twirlReverse 0.2s ease-in forwards ;
+    }
+    .card div.front.animateReverse{
+      transform: rotateY(90deg);
+      animation: twirlReverse 0.2s 0.2s  ease-out forwards reverse;
+    }
+        .hidden{
+      display: none;
+    }
+
+
+
+    @keyframes twirl{
+      0%{ transform: rotateY(0deg) }
+      100%{ transform: rotateY(90deg) }
+    }
+
+    @keyframes twirlReverse{
+      0%{
+        transform: rotateY(0deg)
+        }
+      100%{
+        transform: rotateY(90deg)
+        }
+    }
+
+
+        
+
+
+        /* Add New Button Styles */
+
+        .addCard {
+            position: relative;
+            text-align: center;
+            padding-top: 50px;
+        }
+        
+        #addCardInfo{
+            position: absolute;
+            display: none;
+        }
+
+        #addNewCardBtn {
+            color: green;
+            font-size: 50pt;
+            text-decoration: none;
+        }

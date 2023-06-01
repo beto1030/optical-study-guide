@@ -1,0 +1,24 @@
+Aniseikonia
+A condition in which the ocular image of an object as seen by one eye differs so much in size or shape from that seen by the other eye that the two images cannot be fused into a single impression.
+Anisometropia
+A condition in which the refractive error of one eye significantly differs from that of the other; each eye must have the same sign, i.e. both eye are myopic or hyperopic.
+Antimetropia
+The refractive condition whereby the signsin each eye are opposite; one eye is hyperopic while the other is myopic.
+Aphakia
+An absence of the crystalline lens of the eye.
+Aqueous humor
+The clear watery fluid that fills the anterior and posterior chambers within the front of the eye.
+Astigmatism
+A refractive error that prevents the light rays from comming to a single focus on the retina because of different degrees of refraction in the various meridians of the eye.
+Cataract
+A condition in which the crystalline lens of the eye, or its capsule, or both, become opaque, with consequent loss of visual acuity.
+Choroid
+The vascular intermediate coat that furnishes nourishment to other parts of the eyeball
+Ciliary body
+The portion of the vascular coat between the iris and the choroid. It consists of ciliary processes and the ciliary muscle.
+Compound hyperopic astigmatism
+The refractive error in two points of focus falling behind the retina.
+Compound myopic astigmatism
+The refractive error which results in two points of focus falling in front of the retina.
+test term
+test def
