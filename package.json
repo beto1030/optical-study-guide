@@ -1,0 +1,20 @@
+{
+  "name": "optical-study-guide",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "publish": "gh-pages -d ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beto1030/optical-study-guide.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/beto1030/optical-study-guide/issues"
+  },
+  "homepage": "https://beto1030.github.io/optical-study-guide"
+}
