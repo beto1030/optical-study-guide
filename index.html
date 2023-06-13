@@ -20,155 +20,179 @@
 
   </head>
   <body>
-  <div id="main" class="flashCardContainer m-3">
+      <div id="results"></div>
+      <div id="quiz"> </div>
+      <button id="submit">Submit</button>
 
-          <!-- flash cards -->
-          <!-- new card btn -->
-          <!--
-          <div id="newCardEl" class="card border">
-
-            <p style="width=100%"> <a id="plusSignEl" href="#"  style="width: inherit">+</a> </p>
-
-            <section id="cardInfoSectionEl" class="hidden">
-                <input class="mb-2" id="keyterm" type="text" placeholder="Term">
-                <textarea class="" id="definition" name="defintion" cols="40" rows="6" placeholder="Definition"></textarea>
-
-                <section class="d-flex justify-content-evenly m-1">
-                    <button id="cancelBtn" class="px-5"> &#215;</button> 
-                    <button id="submitBtn" class="px-5">&#x2713;</button>
-
-                </section>
-            </section>
-
-          </div>        
-          -->
-          
-  </div>
-  <div>
-      <input id="myFile" type="file" style="display: none;">
-      <div id="fileOutput" class="m-3" style="display: none; height: 30vh; border: solid 5px;"></div>
-  </div>
+      <!--
+      <div>
+          <label for="makeQuiz">Quiz questions and answers</label>
+          <input id="makeQuiz" type="file" style="">
+          <div id="makeQuizOutput" class="m-3" style="height: 30vh; border: solid 5px;"></div>
+      </div>
+      -->
   
-<script type="module">
-
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-  import { getDatabase, set, ref, push, child, onValue, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
-  
-  /* Connecting to firebase realtime database */
-  const firebaseConfig = {
-    databaseURL: "https://optical-flashcards-default-rtdb.firebaseio.com",
-  };
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app); 
-
-
-
-
-  /* Start of getting all data from database and displaying it */
-  function GetAllDataOnce(){
-    const flashcardsInDB = ref(database);
-
-    get(child(flashcardsInDB, "flashcards"))
-    .then((snapshot) => {
-        var flashcards = [];
-        snapshot.forEach(childSnapshot => {
-            // here we are pushing all the data to our empty array above
-            flashcards.push(childSnapshot.val());
-        });
-
-
-        //here we are creating the elements and setting data for the front and back of the flashcards
-        var mainElement = document.getElementById("main");
-        for(let i = 0; i < flashcards.length; i++){
-            const div = document.createElement("div");
-            div.className = "card flash-card";
-
-            const front = document.createElement("div");
-            front.className = "front";
-            const frontText = document.createTextNode(flashcards[i]["term"]);
-            front.appendChild(frontText);
-
-            const back = document.createElement("div");
-            back.className = "back";
-            const backText= document.createTextNode(flashcards[i]["def"]);
-            back.appendChild(backText);
-
-            div.appendChild(front);
-            div.appendChild(back);
-            document.getElementById("main").appendChild(div);
-        } 
-
-
-        /* Grabs all flashcards and when clicked on applied and removes class names to have flip animation */
-    var cards = Array.prototype.slice.call(document.getElementById("main").getElementsByClassName("flash-card"));
-
-    cards.forEach(function(card){
-      card.addEventListener("click",function(){
-        if(!card.childNodes[0].classList.contains("animate")){
-          for(var i = 0; i < card.childNodes.length; i++){
-            card.childNodes[i].classList.remove("animateReverse");
-            card.childNodes[i].classList.add("animate");
-            
-          }
-        }else{
-          for(var i = 0; i < card.childNodes.length; i++){
-            card.childNodes[i].classList.remove("animate");
-            card.childNodes[i].classList.add("animateReverse");
-          }
-        }
-      });
+      <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, set, ref, push, child, onValue, get } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
         
-    });
-        });
-    
-      }
-    
-      window.onload = GetAllDataOnce;
+        const firebaseConfig = {
+          databaseURL: "https://optical-flashcards-default-rtdb.firebaseio.com",
+        };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        var quizContainer = document.getElementById('quiz');
+        var resultsContainer = document.getElementById('results');
+        var submitButton = document.getElementById('submit');
+
+        
+        function GetQuizDataOnce(){
+          const flashcardsInDB = ref(database);
+
+          get(child(flashcardsInDB, "quizQuestionsAndAnswers"))
+          .then((snapshot) => {
+              var flashcards = [];
+              snapshot.forEach(childSnapshot => {
+                  flashcards.push(childSnapshot.val());
+              });
+                
+
+              var quizElement = document.getElementById("quiz");
+
+              /*const currentQuestion= document.createElement("h1");
+              currentQuestion.className = "text-center my-5";*/
+                
+            for(let i = 0; i < flashcards.length; i++){
+              // Create h5 element
+                let question = document.createElement("h5");
+
+                //set question text
+                const questionText = document.createTextNode(flashcards[i]["question"]);
+                //append question text to question
+                question.appendChild(questionText);
+                //append question to main element
+                quizElement.appendChild(question);
+
+                //create div for choices
+                let div= document.createElement("div");
+                div.className = "choices";
 
 
 
+                for(let j = 0; j < flashcards[i]["choices"].length; j++){
+                    const input = document.createElement("input");
+                    const label = document.createElement("label");
+                    const br = document.createElement("br");
 
-      // pushing data into realtime database
-      var myFile = document.getElementById("myFile");
-      var fileOutput = document.getElementById("fileOutput");
-      
-      myFile.addEventListener('change',function(){
-         const flashcardsInDB = ref(database, "flashcards");
-         var fileReader=new FileReader();
-         fileReader.onload=function(){
-      
-            fileOutput.textContent=fileReader.result;
-            const arr1 = fileOutput.textContent.split('\n');
+                    input.id = flashcards[i]["choices"][j];
+                    input.type = "radio";
+                    input.name = `question${i}`;
+                    input.value = flashcards[i]["choices"][j];
+                    div.appendChild(input);
 
-            function array_into_chunks (array, size_of_chunk) {
-                const arr = [];
-                for (let i = 0; i < array.length; i += size_of_chunk) {
-                   const chunk = array.slice(i, i + size_of_chunk);
-                   arr.push(chunk);
+                    label.htmlFor = flashcards[i]["choices"][j];
+                    label.className = "ms-2 mb-1";
+                    label.innerHTML = flashcards[i]["choices"][j]; 
+                    div.appendChild(label);
+
+                    div.appendChild(br);
+
+                    quizElement.appendChild(div);
+
                 }
-                return arr;
-            }
+
+
+
+
+
             
-            var flashcardData = array_into_chunks(arr1, 2);
-
-            /* Now that i have the array i named flashcardData in the correct format now i have to "push" then into firbase realtime database */
-
-            for( let i = 0; i < flashcardData.length -1; i++){
-                push(flashcardsInDB, {
-                    term: flashcardData[i][0],
-                    def: flashcardData[i][1],
-                })
             }
 
 
-      
-         }
-      
-         fileReader.readAsText(this.files[0]);
-         
-      })
-</script>
 
-  <script defer src="./card-flip.js"></script>
+
+              /*var myCards = Array.prototype.slice.call(document.getElementById("main").getElementsByClassName("flash-card"));
+              myCards.forEach(function(card){
+                card.addEventListener("click",function(){
+                  if(!card.childNodes[0].classList.contains("animate")){
+                    for(var i = 0; i < card.childNodes.length; i++){
+                      card.childNodes[i].classList.remove("animateReverse");
+                      card.childNodes[i].classList.add("animate");
+                      
+                    }
+                  }else{
+                    for(var i = 0; i < card.childNodes.length; i++){
+                      card.childNodes[i].classList.remove("animate");
+                      card.childNodes[i].classList.add("animateReverse");
+                    }
+                  }
+                });
+                  
+              });*/
+
+              });
+          
+            }//GetQuizDataOnce()
+
+       	function showResults(){
+          const flashcardsInDB = ref(database);
+
+          get(child(flashcardsInDB, "quizQuestionsAndAnswers"))
+          .then((snapshot) => {
+              var flashcards = [];
+              snapshot.forEach(childSnapshot => {
+                  flashcards.push(childSnapshot.val());
+              });
+
+		// gather answer containers from our quiz
+		var answerContainers = quizContainer.querySelectorAll('.choices');
+
+		// keep track of user's answers
+		var userAnswer = '';
+		var numCorrect = 0;
+
+		// for each question...
+		for(var i=0; i<flashcards.length; i++){
+
+			// find selected answer
+			userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
+
+			// if answer is correct
+			if(userAnswer===flashcards[i].answer){
+				// add to the number of correct answers
+				numCorrect++;
+
+				// color the answers green
+                answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'lightgreen';
+                console.log(answerContainers[i]);
+
+			}
+			// if answer is wrong or blank
+			else{
+				// color the answers red
+				answerContainers[i].style.color = 'red';
+			}
+		}
+
+		// show number of correct answers out of total
+		resultsContainer.innerHTML = numCorrect + ' out of ' + flashcards.length;
+    });
+    }
+
+            
+
+
+           //call GetQuizDataOnce and showResults
+           GetQuizDataOnce(); 
+           
+           // on submit, show results
+	       submitButton.onclick = function(){
+		    showResults();
+           }
+
+
+          
+      </script>
   </body>
 </html>
