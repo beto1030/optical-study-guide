@@ -20,9 +20,9 @@
 
   </head>
   <body>
-      <div id="results"></div>
-      <div id="quiz"> </div>
-      <button id="submit">Submit</button>
+              <div id="results"></div>
+              <div id="quiz"></div>
+              <button id="submit">Submit</button>
 
       <!--
       <div>
@@ -85,6 +85,11 @@
                     const label = document.createElement("label");
                     const br = document.createElement("br");
 
+                    if(flashcards[i]["choices"][j].indexOf(' ') >= 0){
+                        flashcards[i]["choices"][j] = flashcards[i]["choices"][j].split(' ').join("-");
+
+                    }
+
                     input.id = flashcards[i]["choices"][j];
                     input.type = "radio";
                     input.name = `question${i}`;
@@ -93,7 +98,7 @@
 
                     label.htmlFor = flashcards[i]["choices"][j];
                     label.className = "ms-2 mb-1";
-                    label.innerHTML = flashcards[i]["choices"][j]; 
+                    label.innerHTML = flashcards[i]["choices"][j].split("-").join(" "); 
                     div.appendChild(label);
 
                     div.appendChild(br);
@@ -145,6 +150,26 @@
                   flashcards.push(childSnapshot.val());
               });
 
+        /*
+        for(let i = 0; i < flashcards[i].choices.length; i++){
+           for(let j = 0; j < flashcards[i].choices.length; j++){
+             let choice = flashcards[i].choices[j];
+             console.log(choice);
+           }
+        }
+        */
+
+        // Traverse the string character by character.
+        /*
+        for (var i = 0; i < newStr.length; ++i) {
+          // Changing the ith character
+          // to '-' if it's a space.
+          if (newStr[i] === " ") {
+            newStr[i] = "-";
+          }
+        }
+        */
+
 		// gather answer containers from our quiz
 		var answerContainers = quizContainer.querySelectorAll('.choices');
 
@@ -157,6 +182,11 @@
 
 			// find selected answer
 			userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
+            console.log(userAnswer);
+
+            if(flashcards[i].answer.indexOf(' ') >= 0){
+                flashcards[i].answer = flashcards[i].answer.split(" ").join("-");
+            }
 
 			// if answer is correct
 			if(userAnswer===flashcards[i].answer){
@@ -165,13 +195,13 @@
 
 				// color the answers green
                 answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'lightgreen';
-                console.log(answerContainers[i]);
 
 			}
 			// if answer is wrong or blank
 			else{
 				// color the answers red
-				answerContainers[i].style.color = 'red';
+				//answerContainers[i].style.color = 'red';
+                answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'red';
 			}
 		}
 
