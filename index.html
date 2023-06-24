@@ -20,9 +20,9 @@
 
   </head>
   <body>
-              <div id="results"></div>
               <div id="quiz"></div>
               <button id="submit">Submit</button>
+              <div id="results"></div>
 
       <!--
       <div>
@@ -89,6 +89,7 @@
                         flashcards[i]["choices"][j] = flashcards[i]["choices"][j].split(' ').join("-");
 
                     }
+
 
                     input.id = flashcards[i]["choices"][j];
                     input.type = "radio";
@@ -182,7 +183,6 @@
 
 			// find selected answer
 			userAnswer = (answerContainers[i].querySelector('input[name=question'+i+']:checked')||{}).value;
-            console.log(userAnswer);
 
             if(flashcards[i].answer.indexOf(' ') >= 0){
                 flashcards[i].answer = flashcards[i].answer.split(" ").join("-");
@@ -195,23 +195,53 @@
 
 				// color the answers green
                 answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'lightgreen';
+                let choicesToDisable = answerContainers[i].getElementsByTagName("input");
+                for(let j = 0; j < choicesToDisable.length; j++){
+                    choicesToDisable[j].disabled = true;
+                    choicesToDisable[j].disabled = true;
+                }
 
 			}
+            else if(userAnswer!==flashcards[i].answer){
+                answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'red';
+
+                let choicesToDisable = answerContainers[i].getElementsByTagName("input");
+                for(let j = 0; j < choicesToDisable.length; j++){
+                    choicesToDisable[j].disabled = true;
+                    choicesToDisable[j].disabled = true;
+                }
+            }
 			// if answer is wrong or blank
 			else{
 				// color the answers red
 				//answerContainers[i].style.color = 'red';
-                answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'red';
+                //answerContainers[i].querySelector(`label[for=${userAnswer}]`).style.color = 'black';
 			}
 		}
 
 		// show number of correct answers out of total
 		resultsContainer.innerHTML = numCorrect + ' out of ' + flashcards.length;
+
+        if( numCorrect < flashcards.length){
+            let submitBtn = document.getElementById("submit");
+            submitBtn.style.display = "none";
+            let tryAgainBtn = document.createElement("button");
+            tryAgainBtn.innerHTML = "Try Again";
+            
+            let resultsEl = document.getElementById("results");
+            resultsEl.appendChild(tryAgainBtn);
+            tryAgainBtn.setAttribute("onclick","window.location.reload()");
+              
+             
+        }else{
+             document.getElementById("submit").style.display = "none";
+        }
+
     });
-    }
+
 
             
-
+}
 
            //call GetQuizDataOnce and showResults
            GetQuizDataOnce(); 
@@ -219,6 +249,22 @@
            // on submit, show results
 	       submitButton.onclick = function(){
 		    showResults();
+            let ele= document.getElementsByTagName('input');
+            /*
+            for(var i=0;i<ele.length;i++){
+                ele[i].checked = false;
+            } 
+            */
+            /*
+            for(i = 0; i < radios.length; i++) {
+              radios[i].onclick = function(e) {
+                if(e.ctrlKey) {
+                  this.checked = false;
+                }
+              }
+            }
+            */
+
            }
 
 
