@@ -12,7 +12,7 @@ function insertBefore(newNode, existingNode) {
     existingNode.parentNode.insertBefore(newNode, existingNode);
 }
 
-/*submitBtn.addEventListener("click", function() {
+submitBtn.addEventListener("click", function() {
     
     let newCard = document.createElement("div");
     newCard.setAttribute("class", "card flash-card");
@@ -46,4 +46,4 @@ function insertBefore(newNode, existingNode) {
     plusSignEl.style.display= "block";
     
 
-})*/
+})
