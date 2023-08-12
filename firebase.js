@@ -71,7 +71,7 @@ async function main() {
 
       // Show guestbook to logged-in user
       flashcards.style.display = 'grid';
-      fileInput.style.display = 'block';
+      fileInput.style.display = 'none';
 
       // Subscribe to the guestbook collection
       subscribeFlashcards();
@@ -83,7 +83,7 @@ async function main() {
       console.log('logged out');
 
       // Hide guestbook for non-logged-in users
-      flashcards.style.display = 'grid';
+      flashcards.style.display = 'none';
       fileInput.style.display = 'none';
 
       // Unsubscribe from the guestbook collection
@@ -93,6 +93,7 @@ async function main() {
       //unsubscribeCurrentRSVP();
     }
   });
+
 
   function subscribeFlashcards() {
     const q = query(collection(db, 'flashcards'));
