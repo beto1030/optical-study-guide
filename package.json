@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/beto1030/optical-study-guide/issues"
   },
-  "homepage": "https://beto1030.github.io/optical-study-guide"
+  "homepage": "https://beto1030.github.io/optical-study-guide",
+  "dependencies": {
+    "firebase": "^10.1.0",
+    "firebaseui": "^6.1.0",
+    "serve": "^14.2.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
+  }
 }
