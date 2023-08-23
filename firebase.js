@@ -5,32 +5,29 @@ import * as firebaseui from 'firebaseui';
 
 // Document elements
 const loginBtn = document.getElementById('loginBtn');
-const flashcards = document.getElementById('main');
 const fileInput = document.getElementById("fileInput");
-const guestbookContainer = document.getElementById('guestbook-container');
-
-//const form = document.getElementById('leave-message');
-//const input = document.getElementById('message');
 const mainElement = document.getElementById('main');
-//const numberAttending = document.getElementById('number-attending');
-//const rsvpYes = document.getElementById('rsvp-yes');
-//const rsvpNo = document.getElementById('rsvp-no');
 
-let flashcardListener= null; //let guestbookListener = null;
-
-let db, auth;
+//let guestbookListener = null;
+let flashcardListener = null;
 
 async function main() {
-    const appSettings = {
+    // Initialize Firebase
+    const app = initializeApp({
         apiKey: "AIzaSyAzHuepwEkFoI5QzJISd121B8hyaOOewZA",
         authDomain: "optical-flashcards-a6d76.firebaseapp.com",
         projectId: "optical-flashcards-a6d76",
         storageBucket: "optical-flashcards-a6d76.appspot.com",
         messagingSenderId: "930492285594",
         appId: "1:930492285594:web:f780b68efb73f2ef8e9523"
-    }
-    const app = initializeApp(appSettings); 
-    const auth = getAuth();
+    });
+
+
+    // Initialize firebase 
+        // this gives us the firebase auth object that is created automatically by firebase. When using firebaseui this auth object gets updated automatically
+    const auth = getAuth(); 
+    console.log(auth);
+
     const db = getFirestore();
 
     // FirebaseUI config
@@ -50,15 +47,15 @@ async function main() {
     };
 
   const ui = new firebaseui.auth.AuthUI(auth);
-
+  console.log(document.body.contains(loginBtn));
   if (loginBtn) {
     loginBtn.addEventListener('click', () => {
       if (auth.currentUser) {
         signOut(auth);
-          console.log("signed out");
+          //console.log("signed out");
       } else {
         ui.start('#firebaseui-auth-container', uiConfig);
-          console.log("signing in");
+        mainElement.style.filter = "blur(5px)";
       }
     });
   }
@@ -66,41 +63,48 @@ async function main() {
   // Check if logged in or out
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      loginBtn.style.display = "block";
       loginBtn.textContent = 'LOGOUT';
-      console.log("logged in");
+      //console.log("logged in");
+      mainElement.style.filter = "blur(0px)";
+      loginBtn.style.display = "block";
 
       // Show guestbook to logged-in user
-      flashcards.style.display = 'grid';
-      fileInput.style.display = 'block';
+      //flashcards.style.display = 'grid';
+      //fileInput.style.display = 'block';
 
       // Subscribe to the guestbook collection
-      subscribeFlashcards();
+      //subscribeFlashcards();
 
       // Subscribe to the user's RSVP
       //subscribeCurrentRSVP();
+      if(auth.currentUser.uid == "Q6MhYNoXQ6bmfJjeBpYlwA9ytBk1") {
+         fileInput.style.display = "block"; 
+      }
     } else {
+      loginBtn.style.display = "block";
       loginBtn.textContent = 'LOGIN';
-      console.log('logged out');
+      fileInput.style.display = "none"; 
+      //console.log('logged out');
 
       // Hide guestbook for non-logged-in users
-      flashcards.style.display = 'grid';
-      fileInput.style.display = 'none';
+      //flashcards.style.display = 'grid';
+      //fileInput.style.display = 'none';
 
       // Unsubscribe from the guestbook collection
-      unsubscribeFlashcards();
+      //unsubscribeFlashcards();
 
       // Unsubscribe from the user's RSVP
       //unsubscribeCurrentRSVP();
     }
   });
 
-
   function subscribeFlashcards() {
     const q = query(collection(db, 'flashcards'));
 
     flashcardListener = onSnapshot(q, (snaps) => {
       // Rest page
-      flashcards.innerHTML = '';
+      mainElement.innerHTML = '';
 
       // Loop through documents in database
       snaps.forEach((doc) => {
@@ -162,14 +166,17 @@ async function main() {
             }
             
             var flashcardData = array_into_chunks(arr1, 2);
-            console.log(flashcardData);
+            //console.log(flashcardData);
 
             /* Now that i have the array i named flashcardData in the correct format now i have to "push" then into firbase realtime database */
 
             for( let i = 0; i < flashcardData.length -1; i++){
-                addDoc(collection(db, "flashcards"), {
-                    term: flashcardData[i][0],
-                    def: flashcardData[i][1],
+                addDoc(collection(db, "quiz"), {
+                    question: flashcardData[i][0],
+                    a: flashcardData[i][1],
+                    b: flashcardData[i][1],
+                    c: flashcardData[i][1],
+                    answer: flashcardData[i][1],
                 });
             }
 
@@ -180,34 +187,10 @@ async function main() {
          fileReader.readAsText(this.files[0]);
          
       })
+    subscribeFlashcards();
 }
 
 main();
 
 
-//const database = getDatabase(app);
-//const flashcardsInDB = ref(database, "flashcards"); 
-
-
-//const keyword = document.getElementById("keyterm");
-//const definition = document.getElementById("definition");
-//const submitBtn= document.getElementById("submitBtn");
-//
-//var firebaseRef = firebase.database().ref("flashcards");
-//
-//
-////simple form when submitted pushes term and def values to firebase
-//submitBtn.addEventListener("click", function() {
-//    let term = keyword.value;
-//    let def = definition.value;
-//
-//    //push(flashcardsInDB, {term, def});
-//    push(flashcardsInDB, {
-//        term: term,
-//        def: def,
-//    })
-//
-//    console.log("keyword: " + term);
-//    console.log("definition: " + def);
-//})
 
