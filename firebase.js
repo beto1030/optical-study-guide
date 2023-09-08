@@ -99,40 +99,94 @@ async function main() {
     }
   });
 
+  //function subscribeFlashcards() {
+  //  const q = query(collection(db, 'flashcards'));
+
+  //  flashcardListener = onSnapshot(q, (snaps) => {
+  //    // Rest page
+  //    mainElement.innerHTML = '';
+
+  //    // Loop through documents in database
+  //    snaps.forEach((doc) => {
+  //          //const div = document.createElement("div");
+  //          //div.className = "card flash-card";
+
+  //          const term = document.createElement("div");
+  //          term.className = "term border text-center pt-4";
+  //          term.style.height = "120px";
+  //          term.style.width= "220px";
+  //          const termText = document.createTextNode(doc.data().term);
+  //          term.appendChild(termText);
+
+  //          const def = document.createElement("div");
+  //          def.className = "def border text-center pt-2";
+  //          const defText= document.createTextNode(doc.data().def);
+  //          def.appendChild(defText);
+
+  //          //div.appendChild(front);
+  //          //div.appendChild(back);
+  //          //document.getElementById("main").appendChild(div);
+  //          document.getElementById("main").appendChild(term);
+  //          document.getElementById("main").appendChild(def);
+
+  //      // Create an HTML entry for each document and add it to the chat
+  //      //const front = document.createElement('p');
+  //      //const back = document.createElement('p');
+
+  //      //front.textContent = doc.data().term;
+  //      //back.textContent = doc.data().def;
+  //      //flashcards.appendChild(front);
+  //      //flashcards.appendChild(back);
+  //    });
+  //  });
+  //}
   function subscribeFlashcards() {
-    const q = query(collection(db, 'flashcards'));
+    const q = query(collection(db, 'quiz'));
 
     flashcardListener = onSnapshot(q, (snaps) => {
-      // Rest page
+      // Reset page
       mainElement.innerHTML = '';
+      
 
       // Loop through documents in database
       snaps.forEach((doc) => {
-            const div = document.createElement("div");
-            div.className = "card flash-card";
+            const choicesContainer = document.createElement("div");
+            choicesContainer.classList.add("choicesContainer");
+            choicesContainer.id = "choicesContainer";
 
-            const front = document.createElement("div");
-            front.className = "front";
-            const frontText = document.createTextNode(doc.data().term);
-            front.appendChild(frontText);
+            const question = document.createElement("h3");
+            const questionText = document.createTextNode(doc.data().question);
+            question.appendChild(questionText);
 
-            const back = document.createElement("div");
-            back.className = "back";
-            const backText= document.createTextNode(doc.data().def);
-            back.appendChild(backText);
+            document.getElementById("quiz").appendChild(question);
+            document.getElementById("quiz").appendChild(choicesContainer); 
 
-            div.appendChild(front);
-            div.appendChild(back);
-            document.getElementById("main").appendChild(div);
+            for (let i = 0; i < doc.data().choices.length; i++){
+                //document.getElementById("quiz").innerHTML += "<div class='choicesContainer'>";
+                const label = document.createElement("label");
+                label.for = doc.id;
+                
+                const choice  = document.createElement("input");
+                choice.type = "radio"; 
+                choice.id = doc.id;
+                
+                choice.name = doc.id;
 
-        // Create an HTML entry for each document and add it to the chat
-        //const front = document.createElement('p');
-        //const back = document.createElement('p');
+                const choiceText= document.createTextNode(doc.data().choices[i]);
+                label.appendChild(choiceText);
 
-        //front.textContent = doc.data().term;
-        //back.textContent = doc.data().def;
-        //flashcards.appendChild(front);
-        //flashcards.appendChild(back);
+                const br = document.createElement("br");
+
+                choicesContainer.appendChild(choice);
+                choicesContainer.appendChild(label);
+                choicesContainer.appendChild(br);
+                // document.getElementById("quiz").innerHTML += "</div>";
+
+
+            }
+                const br = document.createElement("br");
+                document.getElementById("quiz").appendChild(br);
+
       });
     });
   }
@@ -165,18 +219,17 @@ async function main() {
                 return arr;
             }
             
-            var flashcardData = array_into_chunks(arr1, 2);
-            //console.log(flashcardData);
+            var flashcardData = array_into_chunks(arr1, 6);
+            console.log(flashcardData);
 
             /* Now that i have the array i named flashcardData in the correct format now i have to "push" then into firbase realtime database */
 
             for( let i = 0; i < flashcardData.length -1; i++){
                 addDoc(collection(db, "quiz"), {
                     question: flashcardData[i][0],
-                    a: flashcardData[i][1],
-                    b: flashcardData[i][1],
-                    c: flashcardData[i][1],
-                    answer: flashcardData[i][1],
+                    choices: [flashcardData[i][1], flashcardData[i][2], flashcardData[i][3]], 
+                    definiton: flashcardData[i][4],
+                    answer: parseInt(flashcardData[i][5]),
                 });
             }
 
