@@ -8,6 +8,12 @@ const loginBtn = document.getElementById('loginBtn');
 const fileInput = document.getElementById("fileInput");
 const mainElement = document.getElementById('main');
 
+// Document quiz elements
+const quizContainer = document.getElementById('quiz');
+const resultsContainer = document.getElementById("results");
+const submitButton = document.getElementById('submit');
+
+
 //let guestbookListener = null;
 let flashcardListener = null;
 
@@ -190,6 +196,26 @@ async function main() {
       });
     });
   }
+  function showResults(questions, quizContainer, resultsContainer){
+    //gather all answer containers from our quiz
+    var answerContainers = document.getElementById("quiz").querySelectorAll(".choicesContainer");
+    
+    //keep track of user's answers
+    var userAnswer = '';
+    var numCorrect = 0;
+    
+    //for each question
+    for(var i = 0; i<questions.length; i++){
+        // find selected answers
+        userAnswer = (answerContainers[i].querySelector('input[name='+answerContainers[i].getAttribute("name")+']:checked')||{}).value;
+
+        // if answer is correct
+        console.log(snaps);
+    }
+
+
+  }
+
   // Unsubscribe from guestbook updates
   function unsubscribeFlashcards() {
     if (flashcardListener != null) {
@@ -241,6 +267,11 @@ async function main() {
          
       })
     subscribeFlashcards();
+
+    // on submit, show results
+    submitButton.onclick = function () {
+        showResults(questions, quizContainer, resultsContainer);
+    }
 }
 
 main();
