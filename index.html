@@ -54,9 +54,9 @@
           </div>
 
   <!-- input file -->
-  <div class="hidden" id="fileInput">
+  <div class="hiden" id="fileInput">
       <input id="myFile" type="file" style="display: block;">
-      <div id="fileOutput" class="m-3" style="display: none; height: 30vh; border: solid 5px;"></div>
+      <div id="fileOutput" class="m-3" style="display: block; height: 30vh; border: solid 5px;"></div>
   </div>
  
 
@@ -70,7 +70,7 @@
               /* Grabs all flashcards and when clicked on applied and removes class names to have flip animation */
           setTimeout(()=> {
                   var cards = Array.prototype.slice.call(document.getElementsByClassName("flash-card"));
-                  console.log(cards);
+                  //console.log(cards);
                   cards.forEach(function(card){
                     card.addEventListener("click",function(){
                       if(!card.childNodes[0].classList.contains("animate")){
