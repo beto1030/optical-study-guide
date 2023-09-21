@@ -1,18 +1,18 @@
-What is Aniseikonia?
-A condition where you can only see things in black and white.
-A condition where objects in one eye differs so much in size or shape than the other eye unable to fuse an image.
-A condition where one eye is hyperopic while the other eye is myopic.
-A condition in which the ocular image of an object as seen by one eye differs so much in size or shape from that seen by the other eye that the two images cannot be fused into a single impression.
-1
-What is Anisometropia?
-A condition where one eye is myopic while the other is hyperopic.
-A refractive error that prevents the light rays from coming to a single focus.
-A condition where both eyes are myopic or hyperopic.
-A condition in which the refractive error of one eye significantly differs from that of the other; each eye must have the same sign, i.e. both eye are myopic or hyperopic.
+What is 1 + 1?
+3
+9
 2
-What is Antimetropia?
-A refractive condition where the signs in each are the same.
-A refractive condition where the signs in each eye are opposite, one eye is hyperopic while the other is myopic.
-A refractive error that prevents the light rays from coming to a single focus.
-The refractive condition whereby the signs in each eye are opposite; one eye is hyperopic while the other is myopic.
-1
+Use the addtion rule
+c
+What is 12 * 12?
+144
+244
+240
+Use the multiplication rule
+a
+What is the square root of 9?
+2.5
+3
+3.3
+Use the square root rule
+b

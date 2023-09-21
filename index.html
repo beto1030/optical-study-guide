@@ -18,21 +18,19 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <header> 
-          <h1 class="flex-grow-1">ABO Flashcards</h1>
-          <button id="loginBtn">LOGIN</button>
-          <section style="position: absolute; left: 0; right: 0; margin: auto;" id="firebaseui-auth-container"></section>
-    </header>
-
-    <div id="main" class="flashCardContainer">
-            <!-- flash cards -->
-    </div>
-
-    <div id="quiz"> <h2>ABO Quiz</h2> <!-- quiz --> </div>
-
-    <button id="submit">Submit Quiz</button>
-
-    <div id="results"></div>
+        <main class="container">
+            <header class="m-0"> 
+                  <h1>Study Guide</h1>
+                  <button id="loginBtn" class="hidden">LOGIN</button>
+                  <section id="firebaseui-auth-container"></section>
+            </header>
+            
+            <div id="quiz"> <h2>ABO Quiz</h2> <!-- quiz --> </div>
+            
+            <button id="submit">Submit Quiz</button>
+            
+            <div id="results"></div>
+        </main>
 
 
    <!-- new card btn -->
@@ -54,7 +52,7 @@
           </div>
 
   <!-- input file -->
-  <div class="hiden" id="fileInput">
+  <div class="hidden" id="fileInput">
       <input id="myFile" type="file" style="display: block;">
       <div id="fileOutput" class="m-3" style="display: block; height: 30vh; border: solid 5px;"></div>
   </div>
