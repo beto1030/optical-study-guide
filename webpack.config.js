@@ -3,7 +3,7 @@ module.exports = {
     entry: './firebase.js',
     output: {
         path: path.resolve(__dirname, 'dist'), 
-        filename: 'bundle.js
+        filename: 'main.js'
     }, 
     devtool: 'eval-source-map',
     watch: true,

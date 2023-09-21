@@ -1,213 +1,204 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signOut, onAuthStateChanged, EmailAuthProvider } from 'firebase/auth';
-import { onSnapshot, doc, addDoc, getFirestore, collection, orderBy, query } from "firebase/firestore";
+import { onSnapshot, doc, getDocs, addDoc,firestore, getFirestore, collection, orderBy, query } from "firebase/firestore";
 import * as firebaseui from 'firebaseui';
+
+//let arr = [];
+//arr.push("wtf");
+//arr.push("you bitch");
+//arr.push("mother fucker");
+//console.log(arr);
 
 // Document elements
 const loginBtn = document.getElementById('loginBtn');
-const flashcards = document.getElementById('main');
 const fileInput = document.getElementById("fileInput");
-const guestbookContainer = document.getElementById('guestbook-container');
-
-//const form = document.getElementById('leave-message');
-//const input = document.getElementById('message');
 const mainElement = document.getElementById('main');
-//const numberAttending = document.getElementById('number-attending');
-//const rsvpYes = document.getElementById('rsvp-yes');
-//const rsvpNo = document.getElementById('rsvp-no');
 
-let flashcardListener= null; //let guestbookListener = null;
+// Document quiz elements
+const quizContainer = document.getElementById('quiz');
+const resultsContainer = document.getElementById("results");
+const submitButton = document.getElementById('submit');
 
-let db, auth;
 
-async function main() {
-    const appSettings = {
+
+
+
+
+generateQuiz(quizContainer, resultsContainer, submitButton);
+
+async function generateQuiz(quizContainer, resultsContainer, submitButton) {
+    // Initialize Firebase
+    const app = initializeApp({
         apiKey: "AIzaSyAzHuepwEkFoI5QzJISd121B8hyaOOewZA",
         authDomain: "optical-flashcards-a6d76.firebaseapp.com",
         projectId: "optical-flashcards-a6d76",
         storageBucket: "optical-flashcards-a6d76.appspot.com",
         messagingSenderId: "930492285594",
         appId: "1:930492285594:web:f780b68efb73f2ef8e9523"
-    }
-    const app = initializeApp(appSettings); 
-    const auth = getAuth();
-    const db = getFirestore();
+    });
 
-    // FirebaseUI config
-    const uiConfig = {
-      credentialHelper: firebaseui.auth.CredentialHelper.NONE,
-      signInOptions: [
-        // Email / Password Provider.
-        EmailAuthProvider.PROVIDER_ID,
-      ],
-      callbacks: {
-        signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-          // Handle sign-in.
-          // Return false to avoid redirect.
-          return false;
+    const db = getFirestore(app);
+
+    var quiz = [];
+    const querySnapshot = await getDocs(collection(db, "quiz")).then(
+        (result) => {
+            //console.log(result.docs.length);
+            for(let i = 0; i<result.docs.length; i++){
+                //console.log(result.docs[i].data());
+                quiz.push(result.docs[i].data());
+            }
+            return quiz;
         },
-      },
-    };
+        (error) => {
+            console.log(error);
+        }
+    );
 
-  const ui = new firebaseui.auth.AuthUI(auth);
+    quiz = querySnapshot;
 
-  if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
-      if (auth.currentUser) {
-        signOut(auth);
-          console.log("signed out");
-      } else {
-        ui.start('#firebaseui-auth-container', uiConfig);
-          console.log("signing in");
+  function showQuestions(quiz, quizContainer) {
+     //console.log(quiz[0].choices.length);
+    var output = [];
+    var answers;
+
+
+    for(var i = 0; i<quiz.length; i++){
+          const choicesContainer = document.createElement("div");
+          choicesContainer.classList.add("choicesContainer");
+          choicesContainer.id = "choicesContainer";
+
+          const question = document.createElement("h3");
+          const questionText = document.createTextNode(quiz[i].question);
+          question.appendChild(questionText);
+
+          document.getElementById("quiz").appendChild(question);
+          document.getElementById("quiz").appendChild(choicesContainer); 
+
+          let abc = ["a", "b", "c"];
+          for (var j = 0; j < quiz[i].choices.length; j++){
+              const label = document.createElement("label");
+              label.classList.add("ms-2")
+              label.for = choicesContainer.id;
+              
+              const choice  = document.createElement("input");
+              choice.type = "radio"; 
+              choice.id = choicesContainer.id;
+              choice.value = abc[j];
+              
+              choice.name = choicesContainer.id+i;
+
+              const choiceText= document.createTextNode(quiz[i].choices[j]);
+              label.appendChild(choiceText);
+
+              const br = document.createElement("br");
+
+              choicesContainer.appendChild(choice);
+              choicesContainer.appendChild(label);
+              choicesContainer.appendChild(br);
+
+
+          }
+          const br = document.createElement("br");
+          document.getElementById("quiz").appendChild(br);
+
       }
-    });
   }
-
-  // Check if logged in or out
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      loginBtn.textContent = 'LOGOUT';
-      console.log("logged in");
-
-      // Show guestbook to logged-in user
-      flashcards.style.display = 'grid';
-      fileInput.style.display = 'block';
-
-      // Subscribe to the guestbook collection
-      subscribeFlashcards();
-
-      // Subscribe to the user's RSVP
-      //subscribeCurrentRSVP();
-    } else {
-      loginBtn.textContent = 'LOGIN';
-      console.log('logged out');
-
-      // Hide guestbook for non-logged-in users
-      flashcards.style.display = 'grid';
-      fileInput.style.display = 'none';
-
-      // Unsubscribe from the guestbook collection
-      unsubscribeFlashcards();
-
-      // Unsubscribe from the user's RSVP
-      //unsubscribeCurrentRSVP();
+  function showResults(quiz, quizContainer, resultsContainer){
+    //gather all answer containers from our quiz
+    var answerContainers = quizContainer.querySelectorAll(".choicesContainer");
+    for(let i = 0; i<answerContainers.length; i++){
+        //console.log(answerContainers[i]);
     }
-  });
+    
+    //keep track of user's answers
+    var userAnswer = '';
+    var numCorrect = 0;
+    
+    //for each question
+    for(var i = 0; i<quiz.length; i++){
+       userAnswer = answerContainers[i].querySelector('input[type=radio]:checked');
+       
+       //if answer is correct
+	   if(userAnswer.value === quiz[i].answer){
+	   	// add to the number of correct answers
+	   	numCorrect++;
+	   	
+	   	// color the answers green
+	   	answerContainers[i].style.color = 'lightgreen';
+	   }
+	   // if answer is wrong or blank
+	   else{
+	   	// color the answers red
+	   	answerContainers[i].style.color = 'red';
+	   }
 
-
-  function subscribeFlashcards() {
-    const q = query(collection(db, 'flashcards'));
-
-    flashcardListener = onSnapshot(q, (snaps) => {
-      // Rest page
-      flashcards.innerHTML = '';
-
-      // Loop through documents in database
-      snaps.forEach((doc) => {
-            const div = document.createElement("div");
-            div.className = "card flash-card";
-
-            const front = document.createElement("div");
-            front.className = "front";
-            const frontText = document.createTextNode(doc.data().term);
-            front.appendChild(frontText);
-
-            const back = document.createElement("div");
-            back.className = "back";
-            const backText= document.createTextNode(doc.data().def);
-            back.appendChild(backText);
-
-            div.appendChild(front);
-            div.appendChild(back);
-            document.getElementById("main").appendChild(div);
-
-        // Create an HTML entry for each document and add it to the chat
-        //const front = document.createElement('p');
-        //const back = document.createElement('p');
-
-        //front.textContent = doc.data().term;
-        //back.textContent = doc.data().def;
-        //flashcards.appendChild(front);
-        //flashcards.appendChild(back);
-      });
-    });
-  }
-  // Unsubscribe from guestbook updates
-  function unsubscribeFlashcards() {
-    if (flashcardListener != null) {
-      flashcardListener = null;
     }
+      //console.log(q);
+      //console.log(userAnswer);
+      // show number of correct answers out of total
+      resultsContainer.innerHTML = numCorrect + ' out of ' + quiz.length;
+
+
   }
 
-      // pushing data into realtime database
-      var myFile = document.getElementById("myFile");
-      var fileOutput = document.getElementById("fileOutput");
+var myFile = document.getElementById("myFile");
+var fileOutput = document.getElementById("fileOutput");
+
+myFile.addEventListener('change',function(){
+   //const flashcardsInDB = ref(database, "flashcards");
+   var fileReader=new FileReader();
+   fileReader.onload=function(){
+
+      fileOutput.textContent=fileReader.result;
+      const arr1 = fileOutput.textContent.split('\n');
+      //console.log(arr1);
+
+      function array_into_chunks (array, size_of_chunk) {
+          const arr = [];
+          for (let i = 0; i < array.length; i += size_of_chunk) {
+             const chunk = array.slice(i, i + size_of_chunk);
+             arr.push(chunk);
+          }
+          return arr;
+      }
       
-      myFile.addEventListener('change',function(){
-         //const flashcardsInDB = ref(database, "flashcards");
-         var fileReader=new FileReader();
-         fileReader.onload=function(){
-      
-            fileOutput.textContent=fileReader.result;
-            const arr1 = fileOutput.textContent.split('\n');
-            //console.log(arr1);
+      var flashcardData = array_into_chunks(arr1, 6);
+      //console.log(flashcardData);
 
-            function array_into_chunks (array, size_of_chunk) {
-                const arr = [];
-                for (let i = 0; i < array.length; i += size_of_chunk) {
-                   const chunk = array.slice(i, i + size_of_chunk);
-                   arr.push(chunk);
-                }
-                return arr;
-            }
-            
-            var flashcardData = array_into_chunks(arr1, 2);
-            console.log(flashcardData);
+      /* Now that i have the array i named flashcardData in the correct format now i have to "push" then into firbase realtime database */
 
-            /* Now that i have the array i named flashcardData in the correct format now i have to "push" then into firbase realtime database */
-
-            for( let i = 0; i < flashcardData.length -1; i++){
-                addDoc(collection(db, "flashcards"), {
-                    term: flashcardData[i][0],
-                    def: flashcardData[i][1],
-                });
-            }
+       //console.log(flashcardData);
+      for( let i = 0; i < flashcardData.length -1; i++){
+          addDoc(collection(db, "quiz"), {
+              question: flashcardData[i][0],
+              choices:[ 
+                 flashcardData[i][1],
+                 flashcardData[i][2],
+                 flashcardData[i][3]
+              ],
+              definition: flashcardData[i][4],
+              answer: flashcardData[i][5],
+          });
+      }
 
 
-      
-         }
-      
-         fileReader.readAsText(this.files[0]);
-         
-      })
+
+   }
+
+   fileReader.readAsText(this.files[0]);
+   
+})
+    
+
+  showQuestions(quiz, quizContainer);
+    
+  //formatQuestions();
+
+  // on submit, show results
+  submitButton.onclick = function () {
+      showResults(quiz, quizContainer, resultsContainer);
+  }
 }
 
-main();
 
 
-//const database = getDatabase(app);
-//const flashcardsInDB = ref(database, "flashcards"); 
-
-
-//const keyword = document.getElementById("keyterm");
-//const definition = document.getElementById("definition");
-//const submitBtn= document.getElementById("submitBtn");
-//
-//var firebaseRef = firebase.database().ref("flashcards");
-//
-//
-////simple form when submitted pushes term and def values to firebase
-//submitBtn.addEventListener("click", function() {
-//    let term = keyword.value;
-//    let def = definition.value;
-//
-//    //push(flashcardsInDB, {term, def});
-//    push(flashcardsInDB, {
-//        term: term,
-//        def: def,
-//    })
-//
-//    console.log("keyword: " + term);
-//    console.log("definition: " + def);
-//})
 
