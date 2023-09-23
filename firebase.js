@@ -83,7 +83,6 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
               choice.type = "radio"; 
               choice.id = choicesContainer.id;
               choice.value = abc[j];
-              
               choice.name = choicesContainer.id+i;
 
               const choiceText= document.createTextNode(quiz[i].choices[j]);
@@ -105,31 +104,47 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
   function showResults(quiz, quizContainer, resultsContainer){
     //gather all answer containers from our quiz
     var answerContainers = quizContainer.querySelectorAll(".choicesContainer");
-    for(let i = 0; i<answerContainers.length; i++){
-        //console.log(answerContainers[i]);
+    var inputTags = quizContainer.querySelectorAll("#choicesContainer");
+    var labelTags = quizContainer.getElementsByTagName("label");
+    for(let i = 0; i<inputTags.length; i++){
+        inputTags[i].disabled = true;
+        //labelTags[i].disabled = true;
+        //console.log(inputTags[i]);
     }
     
     //keep track of user's answers
     var userAnswer = '';
     var numCorrect = 0;
+    var otherAnswers = '';
     
+      
+    //let labels = answerContainers[i].getElementsByTagName("label").length;
+    let labels = document.getElementsByTagName("label");
+    for(var i = 0; i<labels.length; i++){
+        //answerContainers[i].getElementsByTagName("label")[i].style.color = "grey";
+        labels[i].style.color = "lightgrey";
+    }
+    //otherAnswers = answerContainers.querySelector('input[type=radio]');
+    console.log("input element: ",otherAnswers);
     //for each question
     for(var i = 0; i<quiz.length; i++){
+    console.log(quiz[i].choices);
        userAnswer = answerContainers[i].querySelector('input[type=radio]:checked');
        
+       //console.log(quiz[i].choices);
        //if answer is correct
 	   if(userAnswer.value === quiz[i].answer){
-	   	// add to the number of correct answers
 	   	numCorrect++;
-	   	
-	   	// color the answers green
-	   	answerContainers[i].style.color = 'lightgreen';
+        userAnswer.nextSibling.style.color = 'lightgreen';
+        //console.log("Correct Answer: ",userAnswer.nextSibling);
 	   }
-	   // if answer is wrong or blank
-	   else{
-	   	// color the answers red
-	   	answerContainers[i].style.color = 'red';
-	   }
+       else if( userAnswer.value !== quiz[i].answer ){
+	   	userAnswer.nextSibling.style.color = 'red';
+        //console.log("Wrong Answer: ",userAnswer.nextSibling);
+       }
+
+	   	//otherAnswers[i].nextSibling.style.color = 'blue';
+        //console.log("Other Answer: ",otherAnswers.nextSibling);
 
     }
       //console.log(q);
