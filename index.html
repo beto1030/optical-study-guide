@@ -18,16 +18,55 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-        <main class="container">
+        <main style="" class="container">
             <header class="m-0"> 
-                  <h1>Study Guide</h1>
-                  <button id="loginBtn" class="hidden">LOGIN</button>
-                  <section id="firebaseui-auth-container"></section>
+                  <h1 class="">Study Guide Quiz</h1>
+                  <button id="logoutBtn" style="display: none;">logout</button>
+                  <div style="display: block" id="login_register_forms">
+                      <div class="" style="" id="form_container">
+                          <div id="form_header_container">
+                              <h2 id="form_header">Login</h2>
+                          </div>
+                      
+                          <div style="width: 400px;" id="form_content_container">
+                              <div style="margin: auto;" id="form_content_inner_container">
+                                  <!--<input type="text" id="full_name" placeholder="Full name"><br/>-->
+                                  <input type="email" id="email" placeholder="Email"><br/>
+                                  <input type="password" id="password" placeholder="Password">
+                              </div><br/>
+                              <div id="button_container" class=""style="width: 200px;" >
+                                  <!--<button id="registerBtn">Register</button>-->
+                                  <button style="float: left;" id="loginBtn">Login</button>
+                              </div>
+                          </div>
+                        <br/> 
+                        <br/> 
+                        <hr style="width: 200px;"/>
+                      <!-- Register form container -->
+                      <div class="" style="" id="form_container">
+                              <div id="form_header_container">
+                                  <h2 id="form_header">Register</h2>
+                              </div>
+                      
+                              <div style="width: 400px;" id="form_content_container">
+                                  <div style="margin: auto;" id="form_content_inner_container">
+                                      <input type="text" id="register_full_name" placeholder="Full name"><br/>
+                                      <input type="email" id="register_email" placeholder="Email"><br/>
+                                      <input type="password" id="register_password" placeholder="Password">
+                                  </div><br/>
+                                  <div id="button_container" class=""style="width: 200px;" >
+                                      <button style="float: left;" id="registerBtn">Register</button>
+                                  </div>
+                              </div>
+                      
+                          </div>
+                  </div>
+                      </div>
             </header>
             
-            <div id="quiz"> <h2>ABO Quiz</h2> <!-- quiz --> </div>
+            <div style="z-index: 0; display: none;" id="quiz"> <h2>ABO Quiz</h2> <!-- quiz --> </div>
             
-            <button id="submit">Submit Quiz</button>
+            <button style="display: none;" id="submit">Submit Quiz</button>
             
             <div id="results"></div>
         </main>
@@ -62,7 +101,7 @@
 
   <!-- scripts -->
   <script src="./dist/main.js"></script>
-  <script defer src="./card-flip.js"></script>
+  <!--<script defer src="./card-flip.js"></script>-->
   <script>
 
               /* Grabs all flashcards and when clicked on applied and removes class names to have flip animation */
@@ -91,7 +130,7 @@
 
 
   </script>
-  <script src="adding-card.js"></script>
-  <script src="./flashcard-matching.js"></script>
+  <!--<script src="adding-card.js"></script>-->
+  <!--<script src="./flashcard-matching.js"></script>-->
   </body>
 </html>

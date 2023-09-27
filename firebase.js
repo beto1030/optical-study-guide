@@ -1,15 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { onSnapshot, doc, getDocs, addDoc,firestore, getFirestore, collection, orderBy, query } from "firebase/firestore";
+import { onSnapshot, doc, setDoc, getDocs, addDoc, updateDoc, firestore, getFirestore, collection, orderBy, query } from "firebase/firestore";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut} from "firebase/auth";
 import * as firebaseui from 'firebaseui';
-
-//let arr = [];
-//arr.push("wtf");
-//arr.push("you bitch");
-//arr.push("mother fucker");
-//console.log(arr);
 
 // Document elements
 const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const registerBtn= document.getElementById('registerBtn');
 const fileInput = document.getElementById("fileInput");
 const mainElement = document.getElementById('main');
 
@@ -17,16 +14,6 @@ const mainElement = document.getElementById('main');
 const quizContainer = document.getElementById('quiz');
 const resultsContainer = document.getElementById("results");
 const submitButton = document.getElementById('submit');
-
-
-
-
-
-
-generateQuiz(quizContainer, resultsContainer, submitButton);
-
-async function generateQuiz(quizContainer, resultsContainer, submitButton) {
-    // Initialize Firebase
     const app = initializeApp({
         apiKey: "AIzaSyAzHuepwEkFoI5QzJISd121B8hyaOOewZA",
         authDomain: "optical-flashcards-a6d76.firebaseapp.com",
@@ -36,14 +23,13 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
         appId: "1:930492285594:web:f780b68efb73f2ef8e9523"
     });
 
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
     var quiz = [];
     const querySnapshot = await getDocs(collection(db, "quiz")).then(
         (result) => {
-            //console.log(result.docs.length);
             for(let i = 0; i<result.docs.length; i++){
-                //console.log(result.docs[i].data());
                 quiz.push(result.docs[i].data());
             }
             return quiz;
@@ -52,11 +38,31 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
             console.log(error);
         }
     );
+    auth.onAuthStateChanged(user => {
+        if (user !== null) {
+            console.log("user logged in: ");
+            console.log(user);
+            quiz = querySnapshot;
+            document.getElementById("form_container").style.display = "none";
+            document.getElementById("logoutBtn").style.display = "block";
+            document.getElementById("quiz").style.display = "block";
+            document.getElementById("submit").style.display = "block";
+        } else {
+            console.log('user logged out: ');
+            console.log(user);
+            quiz = [];
+            document.getElementById("form_container").style.display = "block";
+            document.getElementById("logoutBtn").style.display = "none";
+            document.getElementById("quiz").style.display = "none";
+            document.getElementById("submit").style.display = "none";
+        }
+    })
 
-    quiz = querySnapshot;
+generateQuiz(quiz, quizContainer, resultsContainer, submitButton);
+
+function generateQuiz(quiz, quizContainer, resultsContainer, submitButton) {
 
   function showQuestions(quiz, quizContainer) {
-     //console.log(quiz[0].choices.length);
     var output = [];
     var answers;
 
@@ -108,8 +114,6 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
     var labelTags = quizContainer.getElementsByTagName("label");
     for(let i = 0; i<inputTags.length; i++){
         inputTags[i].disabled = true;
-        //labelTags[i].disabled = true;
-        //console.log(inputTags[i]);
     }
     
     //keep track of user's answers
@@ -121,39 +125,57 @@ async function generateQuiz(quizContainer, resultsContainer, submitButton) {
     //let labels = answerContainers[i].getElementsByTagName("label").length;
     let labels = document.getElementsByTagName("label");
     for(var i = 0; i<labels.length; i++){
-        //answerContainers[i].getElementsByTagName("label")[i].style.color = "grey";
         labels[i].style.color = "lightgrey";
     }
-    //otherAnswers = answerContainers.querySelector('input[type=radio]');
-    console.log("input element: ",otherAnswers);
+
     //for each question
     for(var i = 0; i<quiz.length; i++){
-    console.log(quiz[i].choices);
        userAnswer = answerContainers[i].querySelector('input[type=radio]:checked');
        
-       //console.log(quiz[i].choices);
        //if answer is correct
 	   if(userAnswer.value === quiz[i].answer){
 	   	numCorrect++;
         userAnswer.nextSibling.style.color = 'lightgreen';
-        //console.log("Correct Answer: ",userAnswer.nextSibling);
 	   }
        else if( userAnswer.value !== quiz[i].answer ){
 	   	userAnswer.nextSibling.style.color = 'red';
-        //console.log("Wrong Answer: ",userAnswer.nextSibling);
        }
-
-	   	//otherAnswers[i].nextSibling.style.color = 'blue';
-        //console.log("Other Answer: ",otherAnswers.nextSibling);
-
     }
-      //console.log(q);
-      //console.log(userAnswer);
       // show number of correct answers out of total
       resultsContainer.innerHTML = numCorrect + ' out of ' + quiz.length;
 
+      let score = (numCorrect/quiz.length)*100+"%";
+      var user = auth.currentUser;
+      
+      setDoc(doc(db, "users",user.uid), { score: score }, { merge: true });
 
   }
+  function resetQuiz(submitButton, resultsContainer){
+    var inputTags = document.querySelectorAll("#choicesContainer");
+    let labels = document.getElementsByTagName("label");
+    for(let i = 0; i<inputTags.length; i++){
+        inputTags[i].disabled = false;
+        inputTags[i].checked = false;
+    }
+    for(var i = 0; i<labels.length; i++){
+        labels[i].style.color = "black";
+    }
+    resultsContainer.innerHTML = " ";
+  }
+
+  showQuestions(quiz, quizContainer);
+    
+  // on submit, show results
+  submitButton.onclick = function () {
+      document.getElementById("submit").innerHTML = "Try Again";
+      showResults(quiz, quizContainer, resultsContainer);
+
+      submitButton.onclick = function () {
+      document.getElementById("submit").innerHTML = "Submit Quiz";
+        resetQuiz(submitButton, resultsContainer);
+      }
+  }
+}// end of generate quiz function
 
 var myFile = document.getElementById("myFile");
 var fileOutput = document.getElementById("fileOutput");
@@ -203,17 +225,119 @@ myFile.addEventListener('change',function(){
    
 })
     
+function register() {
+    // Get all input fields
+    let register_email = document.getElementById("register_email").value;
+    let register_full_name = document.getElementById("register_full_name").value;
+    let register_password = document.getElementById("register_password").value;
 
-  showQuestions(quiz, quizContainer);
-    
-  //formatQuestions();
+    // Validate input fields
+    if (validate_email(email) == false || validate_password(password) == false) {
+        alert('Email or password is not valid.');
+        return;
+        // Dont continue running the code
+    }
+    if(validate_field(full_name) == false) {
+        alert('Unfortunatly, your name is invalid');
+        return;
+    }
 
-  // on submit, show results
-  submitButton.onclick = function () {
-      showResults(quiz, quizContainer, resultsContainer);
-  }
+    // Move on with Auth (this returns a promise)
+    createUserWithEmailAndPassword(auth, email, password)
+    .then(function() {
+        // Declare user variable
+        var user = auth.currentUser;
+
+        // Create User data
+        var user_data = {
+            email: email,
+            full_name: full_name,
+        }
+
+        setDoc(doc(db, "users",user.uid), user_data);
+    })
+    .catch(function(error){
+        // Firebase will use this to alert its errors
+        var error_code = error.code;
+        var error_message = error.message;
+        console.log("inside catch error code: "+error_code+" "+error.message);
+
+    })
 }
 
+function login(){
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    
+    // validate input fields
+    if (validate_email(email) == false || validate_password(password) == false){
+        alert("Email or password is invalid");
+        return;
+        // Don't continue running the code
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then(function(){
+        // Declare user variable
+        var user = auth.currentUser;
+
+        // Create User data
+        var user_data = {
+            last_login: Date.now()
+        }
+
+        updateDoc(doc(db, "users",user.uid), user_data);
+
+    })
+    .catch(function(error){
+        // Firebase will use this to alert its errors
+        var error_code = error.code;
+        var error_message = error.message;
+        console.log("inside catch error code: "+error_code+" "+error.message);
+    })
 
 
+}
 
+// validation functions
+function validate_email(email) {
+    let expression = /^[^@]+@\w+(\.\w+)+\w$/;
+    if (expression.test(email) == true) {
+        // Email is good
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function validate_password(password) {
+    // Firebase only accepts lengths greater than 6
+    if (password < 6){
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function validate_field(field) {
+   if (field == null) {
+       return false;
+   }
+
+   if (field.length <= 0) {
+       return false;
+   } else {
+       return true;
+   }
+}
+
+loginBtn.onclick = function() {
+    login();
+}
+
+registerBtn.onclick = function() {
+    register();
+}
+logoutBtn.onclick = function() {
+    signOut(auth);
+}
