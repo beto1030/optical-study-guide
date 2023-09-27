@@ -232,26 +232,26 @@ function register() {
     let register_password = document.getElementById("register_password").value;
 
     // Validate input fields
-    if (validate_email(email) == false || validate_password(password) == false) {
+    if (validate_email(register_email) == false || validate_password(register_password) == false) {
         alert('Email or password is not valid.');
         return;
         // Dont continue running the code
     }
-    if(validate_field(full_name) == false) {
+    if(validate_field(register_full_name) == false) {
         alert('Unfortunatly, your name is invalid');
         return;
     }
 
     // Move on with Auth (this returns a promise)
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, register_email, register_password)
     .then(function() {
         // Declare user variable
         var user = auth.currentUser;
 
         // Create User data
         var user_data = {
-            email: email,
-            full_name: full_name,
+            email: register_email,
+            full_name: register_full_name,
         }
 
         setDoc(doc(db, "users",user.uid), user_data);
