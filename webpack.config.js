@@ -6,7 +6,7 @@ module.exports = {
         filename: 'main.js'
     }, 
     devtool: 'eval-source-map',
-    //watch: true,
+    watch: true,
     mode: 'development',
     module: {
         rules: [
